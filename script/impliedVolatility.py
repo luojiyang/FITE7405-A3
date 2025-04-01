@@ -19,6 +19,16 @@ def f_prime_sigma(sigma, S, K, r, T):
 
 # Newton method to find the implied volatility
 def impliedVolatility(S, K, r, T, V, option_type):
+    '''
+    Calculate the implied volatility of an option using the Newton method.
+
+    S: current stock price
+    K: strike price
+    r: risk-free rate
+    T: maturity time
+    V: option price
+    option_type: 'call' or 'put'
+    '''
     sigmahat = np.sqrt(2 * abs((np.log(S / K) + r * T) / T))
     tol = 1e-8
     nmax = 100
