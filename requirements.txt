@@ -3,3 +3,4 @@ pandas==1.0.0
 scikit-learn==0.22.1
 scipy==1.4.1
 sobol_seq==0.2.0
+ttkbootstrap=1.12.0

@@ -54,7 +54,7 @@ def geoBasket(S_1, S_2, K, T, sigma_1, sigma_2, r, pho,optionType):
         return "Invalid option type"
     B_g_0 = (S_1 * S_2) ** (1 / 2)
     sigma_B_g = (
-        np.sqrt(2 * (sigma_1**2) + 2 * (sigma_2**2) + 2 * sigma_1 * sigma_2 * pho) / 2
+        np.sqrt((sigma_1**2) + (sigma_2**2) + 2 * sigma_1 * sigma_2 * pho) / 2
     )
     miu_B_g = r - 0.5 * (sigma_1**2 + sigma_2**2) / 2 + 0.5 * sigma_B_g**2
     d1_hat = np.log(B_g_0 / K) + (miu_B_g + 0.5 * sigma_B_g**2) * T / (
