@@ -61,7 +61,7 @@ class ImpliedVolatility:
         return self.K * np.exp(-self.r*self.T) * norm.cdf(-d2) - \
                 self.S * np.exp(-self.q*self.T) * norm.cdf(-d1)
   
-  def calculate_implied_vol(self, max_iter=100, tol=1e-6):
+  def calculate_implied_vol(self, max_iter=100000, tol=1e-6):
     """
     计算隐含波动率（牛顿法）
     
