@@ -2,11 +2,11 @@ import numpy as np
 from scipy.stats import norm
 
 class ArithmeticBasketPricer:
-    def __init__(self, S0_1=100, S0_2=100, sigma_1=0.3, sigma_2=0.3, rho=0.5, 
+    def __init__(self, S0_1=100, S0_2=100, sigma_1=0.3, sigma_2=0.3, rho=0.5,
                  r=0.05, T=3.0, K=100, option_type='call', m=100000, control_variate='None'):
         """
         Basket Option Pricer for arithmetic and geometric basket options
-        
+
         Parameters:
             S0_1: Initial price of asset 1 (default 100)
             S0_2: Initial price of asset 2 (default 100)
@@ -31,7 +31,7 @@ class ArithmeticBasketPricer:
         self.option_type = option_type.lower()
         self.m = m
         self.control_variate = control_variate
-        
+
         # Validate parameters
         self._validate_parameters()
 
@@ -57,17 +57,17 @@ class ArithmeticBasketPricer:
     def _geometric_price(self):
         """Calculate closed-form solution for geometric basket option"""
         Bg0 = np.sqrt(self.S0_1 * self.S0_2)
-        sigma_bg = np.sqrt(self.sigma_1 ** 2 + self.sigma_2 ** 2 + 
+        sigma_bg = np.sqrt(self.sigma_1 ** 2 + self.sigma_2 ** 2 +
                           2 * self.rho * self.sigma_1 * self.sigma_2) / 2
         mu_bg = self.r - 0.5 * (self.sigma_1 ** 2 + self.sigma_2 ** 2) / 2 + 0.5 * sigma_bg ** 2
         d1 = (np.log(Bg0 / self.K) + (mu_bg + 0.5 * sigma_bg ** 2) * self.T) / (sigma_bg * np.sqrt(self.T))
         d2 = d1 - sigma_bg * np.sqrt(self.T)
 
         if self.option_type == 'call':
-            price = np.exp(-self.r * self.T) * (Bg0 * np.exp(mu_bg * self.T) * norm.cdf(d1) - 
+            price = np.exp(-self.r * self.T) * (Bg0 * np.exp(mu_bg * self.T) * norm.cdf(d1) -
                                                self.K * norm.cdf(d2))
         else:
-            price = np.exp(-self.r * self.T) * (self.K * norm.cdf(-d2) - 
+            price = np.exp(-self.r * self.T) * (self.K * norm.cdf(-d2) -
                                                Bg0 * np.exp(mu_bg * self.T) * norm.cdf(-d1))
         return price
 
@@ -77,9 +77,9 @@ class ArithmeticBasketPricer:
         cov_matrix = [[1, self.rho], [self.rho, 1]]
         z = np.random.multivariate_normal([0, 0], cov_matrix, self.m)
 
-        S1_T = self.S0_1 * np.exp((self.r - 0.5 * self.sigma_1 ** 2) * self.T + 
+        S1_T = self.S0_1 * np.exp((self.r - 0.5 * self.sigma_1 ** 2) * self.T +
                                 self.sigma_1 * np.sqrt(self.T) * z[:, 0])
-        S2_T = self.S0_2 * np.exp((self.r - 0.5 * self.sigma_2 ** 2) * self.T + 
+        S2_T = self.S0_2 * np.exp((self.r - 0.5 * self.sigma_2 ** 2) * self.T +
                                 self.sigma_2 * np.sqrt(self.T) * z[:, 1])
         return S1_T, S2_T
 
@@ -88,29 +88,31 @@ class ArithmeticBasketPricer:
         try:
             # Generate paths
             S1_T, S2_T = self._generate_paths()
-            
+
             # Calculate arithmetic average and payoff
             B_a = (S1_T + S2_T) / 2
-            payoff = (np.maximum(B_a - self.K, 0) if self.option_type == 'call' 
+            payoff = (np.maximum(B_a - self.K, 0) if self.option_type == 'call'
                      else np.maximum(self.K - B_a, 0))
-            
+
             # Base Monte Carlo price
             price = np.exp(-self.r * self.T) * np.mean(payoff)
             std = np.std(payoff)
             conf_lower = price - 1.96 * std / np.sqrt(self.m)
             conf_upper = price + 1.96 * std / np.sqrt(self.m)
 
-            # Control variate adjustment if specified
+            # 在ArithmeticBasketPricer的calculate_price方法中，控制变量部分修改为：
             if self.control_variate == 'Geometric Basket':
                 geo_price = self._geometric_price()
                 B_g = np.sqrt(S1_T * S2_T)
-                geo_payoff = (np.maximum(B_g - self.K, 0) if self.option_type == 'call' 
-                             else np.maximum(self.K - B_g, 0))
-                
+                geo_payoff = (np.maximum(B_g - self.K, 0) if self.option_type == 'call'
+                              else np.maximum(self.K - B_g, 0))
+
                 cov = np.cov(payoff, geo_payoff)
                 beta = cov[0, 1] / cov[1, 1]
-                adjusted_payoff = payoff - beta * (geo_payoff - geo_price)
-                
+                # 修正：将理论价格转换为未来值的期望
+                E_geo_payoff = geo_price * np.exp(self.r * self.T)
+                adjusted_payoff = payoff - beta * (geo_payoff - E_geo_payoff)
+
                 price = np.exp(-self.r * self.T) * np.mean(adjusted_payoff)
                 std = np.std(adjusted_payoff)
                 conf_lower = price - 1.96 * std / np.sqrt(self.m)
