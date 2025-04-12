@@ -33,7 +33,7 @@ class GeometricBasketPricer:
         # 计算中间变量
         self.B_g_0 = (self.S_1 * self.S_2) ** (1 / 2)
         self.sigma_B_g = (
-            np.sqrt(2 * (self.sigma_1**2) + 2 * (self.sigma_2**2) + 2 * self.sigma_1 * self.sigma_2 * self.rho) / 2
+            np.sqrt((self.sigma_1**2) + (self.sigma_2**2) + 2 * self.sigma_1 * self.sigma_2 * self.rho) / 2
         )
         self.miu_B_g = self.r - 0.5 * (self.sigma_1**2 + self.sigma_2**2) / 2 + 0.5 * self.sigma_B_g**2
         self.d1_hat = (np.log(self.B_g_0 / self.K) + (self.miu_B_g + 0.5 * self.sigma_B_g**2) * self.T) / (
