@@ -57,8 +57,8 @@ class BlackScholesPricer:
         r (float): risk-free interest rate
         q (float): repo rate (dividend yield for stocks)
         """
-        d1 = (np.log(self.S / self.K) + (self.r - self.q + self.sigma**2 / 2) * self.T) / (self.sigma * np.sqrt(self.T))
-        d2 = d1 - self.sigma * np.sqrt(self.T)
+        d1 = (np.log(self.S / self.K) + ((self.r - self.q) * self.T)) / (self.sigma * np.sqrt(self.T)) + 0.5 * self.sigma * np.sqrt(self.T)
+        d2 = (np.log(self.S / self.K) + ((self.r - self.q) * self.T)) / (self.sigma * np.sqrt(self.T)) - 0.5 * self.sigma * np.sqrt(self.T)
         return d1, d2
     
     def call_value(self,d1,d2):
