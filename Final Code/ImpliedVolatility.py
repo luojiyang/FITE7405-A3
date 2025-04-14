@@ -63,7 +63,7 @@ class ImpliedVolatility:
         """
         sigma = (
             sigma if sigma is not None else getattr(self, "sigma", 0.2)
-        )  # 默认波动率0.2
+        )  # default volatility 0.2
         d1, d2 = self._calculate_d1_d2(sigma)
 
         if self.option_type == "call":
