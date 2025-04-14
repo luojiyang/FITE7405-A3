@@ -5,8 +5,7 @@ class ArithmeticAsianPricer:
     def __init__(self, S0=100, sigma=0.3, r=0.05, T=3.0, K=100, n=50,
                  option_type='call', m=100000, control_variate='none'):
         """
-        Asian Option Pricer for arithmetic and geometric Asian options
-
+        Arithmetic Asian Pricer
         Parameters:
             S0: Initial asset price (default 100)
             sigma: Volatility (default 0.3)

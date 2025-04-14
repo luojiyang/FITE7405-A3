@@ -5,8 +5,7 @@ class ArithmeticBasketPricer:
     def __init__(self, S0_1=100, S0_2=100, sigma_1=0.3, sigma_2=0.3, rho=0.5,
                  r=0.05, T=3.0, K=100, option_type='call', m=100000, control_variate='None'):
         """
-        Basket Option Pricer for arithmetic and geometric basket options
-
+        Arithmetic Basket Pricer
         Parameters:
             S0_1: Initial price of asset 1 (default 100)
             S0_2: Initial price of asset 2 (default 100)
